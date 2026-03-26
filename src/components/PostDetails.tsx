@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
   fetchComments,
   addComment,
-  removeComment,
+  deleteComment,
   selectComments,
   selectCommentsLoaded,
   selectCommentsError,
@@ -39,7 +39,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
   };
 
   const handleDeleteComment = (commentId: number) => {
-    dispatch(removeComment(commentId));
+    dispatch(deleteComment(commentId));
   };
 
   return (

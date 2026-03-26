@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as commentsApi from '../api/comments';
 import { Comment, CommentData } from '../types/Comment';
+// eslint-disable-next-line import/no-cycle
+import { RootState } from '../app/store';
 
 export interface CommentsState {
   items: Comment[];
@@ -41,11 +43,7 @@ export const deleteComment = createAsyncThunk(
 const commentsSlice = createSlice({
   name: 'comments',
   initialState,
-  reducers: {
-    removeComment: (state, action: PayloadAction<number>) => {
-      state.items = state.items.filter((c: Comment) => c.id !== action.payload);
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(fetchComments.pending, state => {
@@ -65,17 +63,18 @@ const commentsSlice = createSlice({
       })
       .addCase(addComment.rejected, state => {
         state.hasError = true;
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.items = state.items.filter(
+          (c: Comment) => c.id !== action.payload,
+        );
       });
   },
 });
 
-export const { removeComment } = commentsSlice.actions;
-
-export const selectComments = (state: { comments: CommentsState }) =>
-  state.comments.items;
-export const selectCommentsLoaded = (state: { comments: CommentsState }) =>
-  state.comments.loaded;
-export const selectCommentsError = (state: { comments: CommentsState }) =>
+export const selectComments = (state: RootState) => state.comments.items;
+export const selectCommentsLoaded = (state: RootState) => state.comments.loaded;
+export const selectCommentsError = (state: RootState) =>
   state.comments.hasError;
 
 export default commentsSlice.reducer;
